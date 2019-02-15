@@ -241,7 +241,7 @@ class Database:
             else:
                 parameters[param] = self.build_query[param]
         # reset path and build_query for next query
-        request_ref = '{0}{1}.json?{2}'.format(self.database_url, self.path, urlencode(parameters))
+        request_ref = '{0}{1}.json?{2}'.format(self.database_url, self.path, parameters)
         self.path = ""
         self.build_query = {}
         return request_ref
