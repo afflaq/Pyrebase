@@ -37,6 +37,9 @@ class Firebase:
         self.storage_bucket = config["storageBucket"]
         self.credentials = None
         self.requests = requests.Session()
+        self.urlencodeflag = True
+        if config.get("urlEncodeQuery"):
+            self.urlencodeflag = config["urlEncodeQuery"]
         if config.get("serviceAccount"):
             scopes = [
                 'https://www.googleapis.com/auth/firebase.database',
@@ -240,11 +243,15 @@ class Database:
                 parameters[param] = "true" if self.build_query[param] else "false"
             else:
                 parameters[param] = self.build_query[param]
-        # reset path and build_query for next query
-        request_ref = '{0}{1}.json?{2}'.format(self.database_url, self.path, parameters)
+        if self.urlencodeflag:
+            request_ref = '{0}{1}.json?{2}'.format(self.database_url, self.path, urlencode(parameters))
+        else:
+            request_ref = '{0}{1}.json?{2}'.format(self.database_url, self.path, parameters)
         self.path = ""
         self.build_query = {}
         return request_ref
+
+
 
     def build_headers(self, token=None):
         headers = {"content-type": "application/json; charset=UTF-8"}
